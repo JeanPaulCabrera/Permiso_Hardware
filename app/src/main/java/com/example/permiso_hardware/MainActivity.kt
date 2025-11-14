@@ -1,4 +1,4 @@
-package com.example.permiso_hardware // Asegúrate que este sea tu package name
+package com.example.permiso_hardware
 
 import android.Manifest
 import android.os.Bundle
@@ -9,21 +9,23 @@ import androidx.appcompat.app.AppCompatActivity
 
 class MainActivity : AppCompatActivity() {
 
-    // 1. Registrar el "contrato" para la solicitud de permiso.
-    // Esto se hace como una variable de la clase.
-    // Recibe un booleano 'isGranted' (true si se concedió, false si se negó)
+    // Launcher para solicitar permiso de ubicación
     private val requestLocationPermissionLauncher =
-        registerForActivityResult(
-            ActivityResultContracts.RequestPermission()
-        ) { isGranted: Boolean ->
+        registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
             if (isGranted) {
-                // Permiso CONCEDIDO
-                // Aquí podrías llamar a una función para obtener la ubicación
                 showToast("Permiso de ubicación CONCEDIDO")
             } else {
-                // Permiso DENEGADO
-                // Informa al usuario que la función no está disponible
                 showToast("Permiso de ubicación DENEGADO")
+            }
+        }
+
+    // Launcher para solicitar permiso de micrófono
+    private val requestMicPermissionLauncher =
+        registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
+            if (isGranted) {
+                showToast("Permiso de micrófono CONCEDIDO")
+            } else {
+                showToast("Permiso de micrófono DENEGADO")
             }
         }
 
@@ -31,20 +33,23 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        // 2. Encontrar el botón en el layout
-        val btnRequest: Button = findViewById(R.id.btnRequestLocation)
-
-        // 3. Configurar el OnClickListener del botón
-        btnRequest.setOnClickListener {
-            // 4. Lanzar la solicitud de permiso
-            // (Pedimos ubicación PRECISA, pero puedes cambiarlo por COARSE)
+        // Botón de ubicación
+        val btnRequestLocation: Button = findViewById(R.id.btnRequestLocation)
+        btnRequestLocation.setOnClickListener {
             requestLocationPermissionLauncher.launch(
                 Manifest.permission.ACCESS_FINE_LOCATION
             )
         }
+
+        // Botón de micrófono
+        val btnRequestMic: Button = findViewById(R.id.btnRequestMic)
+        btnRequestMic.setOnClickListener {
+            requestMicPermissionLauncher.launch(
+                Manifest.permission.RECORD_AUDIO
+            )
+        }
     }
 
-    // Función simple para mostrar Toasts
     private fun showToast(message: String) {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
     }
